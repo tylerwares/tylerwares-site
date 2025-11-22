@@ -1,25 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export const CryptoGame: React.FC = () => {
-  const [price, setPrice] = useState(100);
-  const [cash, setCash] = useState(1000);
-  const [coins, setCoins] = useState(0);
-  const [history, setHistory] = useState<number[]>(new Array(20).fill(100));
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+interface Coin {
+  id: string;
+  name: string;
+  symbol: string;
+  color: string;
+  price: number;
+  history: number[];
+  holdings: number;
+  volatility: number;
+}
 
-  // Chaotic price movement
+export const CryptoGame: React.FC = () => {
+  const [cash, setCash] = useState(1000);
+  const [selectedCoinId, setSelectedCoinId] = useState('BTC');
+  const [coins, setCoins] = useState<Coin[]>([
+    {
+      id: 'BTC',
+      name: 'Botcoin',
+      symbol: 'BTC',
+      color: '#FF6B00',
+      price: 45000,
+      history: new Array(30).fill(45000),
+      holdings: 0,
+      volatility: 100,
+    },
+    {
+      id: 'UTH',
+      name: 'Uthereum',
+      symbol: 'UTH',
+      color: '#00C2FF',
+      price: 3000,
+      history: new Array(30).fill(3000),
+      holdings: 0,
+      volatility: 50,
+    },
+    {
+      id: 'SOL',
+      name: 'Solami',
+      symbol: 'SOL',
+      color: '#00FF94',
+      price: 150,
+      history: new Array(30).fill(150),
+      holdings: 0,
+      volatility: 15,
+    }
+  ]);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const selectedCoin = coins.find(c => c.id === selectedCoinId)!;
+
+  // Market movement simulation
   useEffect(() => {
     const interval = setInterval(() => {
-      setPrice(currentPrice => {
-        const volatility = Math.random() > 0.8 ? 20 : 5; // Occasional huge spikes/dips
-        const change = (Math.random() - 0.5) * volatility;
-        let newPrice = currentPrice + change;
-        if (newPrice < 1) newPrice = 1; // Rug pull protection
+      setCoins(prevCoins => prevCoins.map(coin => {
+        // Chaotic random movement
+        const direction = Math.random() > 0.5 ? 1 : -1;
+        const intensity = Math.random();
+        // Occasional massive crash or pump
+        const chaosMultiplier = Math.random() > 0.95 ? 5 : 1;
         
-        setHistory(h => [...h.slice(1), newPrice]);
-        return newPrice;
-      });
-    }, 500);
+        const change = direction * intensity * coin.volatility * chaosMultiplier;
+        let newPrice = coin.price + change;
+        
+        // Prevent going to 0 (unless rugged, but let's be nice)
+        if (newPrice < 1) newPrice = 1;
+
+        const newHistory = [...coin.history.slice(1), newPrice];
+        return { ...coin, price: newPrice, history: newHistory };
+      }));
+    }, 800);
     return () => clearInterval(interval);
   }, []);
 
@@ -32,79 +82,149 @@ export const CryptoGame: React.FC = () => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    const history = selectedCoin.history;
     const min = Math.min(...history);
     const max = Math.max(...history);
     const range = max - min || 1;
 
+    // Draw grid
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.strokeStyle = history[history.length - 1] >= history[0] ? '#00FF94' : '#FF0055';
-    ctx.lineWidth = 2;
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+
+    // Draw line
+    ctx.beginPath();
+    ctx.strokeStyle = selectedCoin.color;
+    ctx.lineWidth = 3;
+    ctx.lineJoin = 'round';
 
     history.forEach((p, i) => {
       const x = (i / (history.length - 1)) * canvas.width;
-      const y = canvas.height - ((p - min) / range) * canvas.height * 0.8 - 10; // Padding
+      // Scale y to fit canvas with padding
+      const y = canvas.height - ((p - min) / range) * (canvas.height - 20) - 10;
+      
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
 
-  }, [history]);
+    // Glow effect
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = selectedCoin.color;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+  }, [coins, selectedCoinId]);
 
   const buy = () => {
-    if (cash >= price) {
-      setCash(c => c - price);
-      setCoins(c => c + 1);
+    if (cash >= selectedCoin.price) {
+      setCash(c => c - selectedCoin.price);
+      setCoins(prev => prev.map(c => 
+        c.id === selectedCoinId ? { ...c, holdings: c.holdings + 1 } : c
+      ));
     }
   };
 
   const sell = () => {
-    if (coins >= 1) {
-      setCash(c => c + price);
-      setCoins(c => c - 1);
+    if (selectedCoin.holdings >= 1) {
+      setCash(c => c + selectedCoin.price);
+      setCoins(prev => prev.map(c => 
+        c.id === selectedCoinId ? { ...c, holdings: c.holdings - 1 } : c
+      ));
     }
   };
 
-  const totalValue = cash + (coins * price);
+  const totalPortfolioValue = coins.reduce((acc, c) => acc + (c.price * c.holdings), 0);
+  const netWorth = cash + totalPortfolioValue;
 
   return (
-    <div className="p-6 bg-tyler-black border border-accent-blue font-mono text-center h-full flex flex-col justify-between">
-      <div>
-        <h3 className="text-xl text-accent-blue font-bold mb-4 border-b border-gray-700 pb-2">
-          PAPER HANDS SIM
-        </h3>
-        
-        <div className="bg-gray-900 h-24 mb-4 relative border border-gray-800 overflow-hidden">
-            <canvas ref={canvasRef} width={300} height={96} className="w-full h-full" />
-            <div className="absolute top-1 right-1 text-xs text-white bg-black px-1">
-                ${price.toFixed(2)}
+    <div className="p-6 bg-tyler-black border border-accent-blue font-mono h-full flex flex-col gap-4">
+      
+      {/* Header Stats */}
+      <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+        <div>
+            <div className="text-xs text-gray-500">NET WORTH</div>
+            <div className={`text-2xl font-bold ${netWorth >= 1000 ? 'text-accent-green' : 'text-accent-pink'}`}>
+                ${netWorth.toFixed(0)}
             </div>
         </div>
-
-        <div className="flex justify-between text-sm mb-4">
-            <div className="text-gray-400">CASH: <span className="text-white">${cash.toFixed(0)}</span></div>
-            <div className="text-gray-400">COINS: <span className="text-white">{coins}</span></div>
-        </div>
-        
-        <div className={`text-2xl font-bold mb-6 ${totalValue >= 1000 ? 'text-accent-green' : 'text-accent-pink'}`}>
-            NET: ${totalValue.toFixed(0)}
+        <div className="text-right">
+            <div className="text-xs text-gray-500">LIQUID CASH</div>
+            <div className="text-xl text-white">${cash.toFixed(0)}</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <button 
-          onClick={buy}
-          disabled={cash < price}
-          className="bg-accent-green/10 border border-accent-green text-accent-green py-3 hover:bg-accent-green hover:text-black transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-accent-green"
-        >
-          BUY
-        </button>
-        <button 
-          onClick={sell}
-          disabled={coins < 1}
-          className="bg-accent-pink/10 border border-accent-pink text-accent-pink py-3 hover:bg-accent-pink hover:text-black transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-accent-pink"
-        >
-          SELL
-        </button>
+      {/* Main Area */}
+      <div className="flex flex-1 gap-4 min-h-0">
+        
+        {/* Coin List */}
+        <div className="w-1/3 flex flex-col gap-2 overflow-y-auto pr-1">
+            {coins.map(coin => (
+                <div 
+                    key={coin.id}
+                    onClick={() => setSelectedCoinId(coin.id)}
+                    className={`
+                        p-2 border-2 cursor-pointer transition-all relative overflow-hidden group
+                        ${selectedCoinId === coin.id ? 'border-white bg-gray-900' : 'border-gray-800 hover:border-gray-600'}
+                    `}
+                >
+                    <div className="flex items-center justify-between mb-1 relative z-10">
+                        <div className="flex items-center gap-2">
+                            {/* Joke Logo */}
+                            <div 
+                                className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] text-black"
+                                style={{ backgroundColor: coin.color }}
+                            >
+                                {coin.symbol[0]}
+                            </div>
+                            <span className="font-bold text-sm">{coin.symbol}</span>
+                        </div>
+                    </div>
+                    <div className="text-xs text-right relative z-10" style={{ color: coin.color }}>
+                        ${coin.price.toFixed(0)}
+                    </div>
+                    <div className="text-[10px] text-gray-500 text-right relative z-10">
+                        Owned: {coin.holdings}
+                    </div>
+                    
+                    {/* Selection Indicator */}
+                    {selectedCoinId === coin.id && (
+                        <div className="absolute right-0 top-0 bottom-0 w-1" style={{ backgroundColor: coin.color }}></div>
+                    )}
+                </div>
+            ))}
+        </div>
+
+        {/* Chart & Controls */}
+        <div className="w-2/3 flex flex-col">
+            <div className="flex-1 bg-black border border-gray-800 relative mb-4 p-2">
+                <canvas ref={canvasRef} width={400} height={200} className="w-full h-full object-contain" />
+                <div className="absolute top-2 left-2 text-xs font-bold" style={{ color: selectedCoin.color }}>
+                    {selectedCoin.name} // LIVE
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 h-14">
+                <button 
+                    onClick={buy}
+                    disabled={cash < selectedCoin.price}
+                    className="bg-accent-green/20 border border-accent-green text-accent-green hover:bg-accent-green hover:text-black transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-green font-bold"
+                >
+                    BUY
+                </button>
+                <button 
+                    onClick={sell}
+                    disabled={selectedCoin.holdings < 1}
+                    className="bg-accent-pink/20 border border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-black transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-pink font-bold"
+                >
+                    SELL
+                </button>
+            </div>
+        </div>
+
       </div>
     </div>
   );

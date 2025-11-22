@@ -7,19 +7,46 @@ import { GameArcade } from './components/GameArcade';
 import { PROJECTS, SOCIALS } from './constants';
 
 const App: React.FC = () => {
+  
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-tyler-black text-tyler-light font-sans selection:bg-accent-green selection:text-black">
       
       {/* Navigation / Header */}
-      <nav className="fixed top-0 left-0 w-full z-40 bg-tyler-black/80 backdrop-blur-sm border-b border-gray-800">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-tyler-black/90 backdrop-blur-md border-b border-gray-800 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="font-mono font-bold text-xl tracking-tighter hover:text-accent-green cursor-pointer">
             TW.com
           </div>
           <div className="flex gap-4 md:gap-6 font-mono text-xs md:text-sm">
-            <a href="#projects" className="hover:text-accent-blue transition-colors">PROJECTS</a>
-            <a href="#arcade" className="hover:text-white transition-colors text-accent-pink">PLAYGROUND</a>
-            <a href="#about" className="hover:text-accent-orange transition-colors">ABOUT</a>
+            <a 
+              href="#projects" 
+              onClick={(e) => handleNavClick(e, 'projects')}
+              className="hover:text-accent-blue transition-colors cursor-pointer uppercase"
+            >
+              Projects
+            </a>
+            <a 
+              href="#arcade" 
+              onClick={(e) => handleNavClick(e, 'arcade')}
+              className="hover:text-white transition-colors text-accent-pink cursor-pointer uppercase"
+            >
+              Playground
+            </a>
+            <a 
+              href="#about" 
+              onClick={(e) => handleNavClick(e, 'about')}
+              className="hover:text-accent-orange transition-colors cursor-pointer uppercase"
+            >
+              About
+            </a>
             <a 
               href={SOCIALS.twitter} 
               target="_blank" 
@@ -45,7 +72,6 @@ const App: React.FC = () => {
         </div>
 
         {/* Projects */}
-        {/* Added scroll-mt-24 to account for fixed header when jumping to anchor */}
         <section id="projects" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
           <h2 className="text-4xl md:text-6xl font-black mb-16 text-center">
             <span className="border-b-4 border-accent-blue">SHIP IT</span> OR DIE TRYING
