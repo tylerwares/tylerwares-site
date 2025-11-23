@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateChatResponse } from '../services/geminiService';
 import { ChatMessage } from '../types';
 
 export const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: "Yo! I'm Tyler's digital twin (powered by Gemini). Ask me about my projects, music taste, or how I automate factories." }
+    { role: 'model', text: "SYSTEM_BOOT... I am Tyler's Automated Assistant. I have 0% AI and 100% hardcoded logic. Ask me about 'projects', 'music', or 'tyler'." }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -19,6 +18,37 @@ export const ChatWidget: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  const getStaticResponse = (text: string): string => {
+    const lower = text.toLowerCase();
+    
+    if (lower.includes('project') || lower.includes('tweetable') || lower.includes('wallet') || lower.includes('lead')) {
+      return "Tyler is building Tweetable.app (Twitter growth), WalletGlass.io (Crypto transparency), and LeadSaver.ca. He never sleeps.";
+    }
+    if (lower.includes('music') || lower.includes('edm') || lower.includes('festival')) {
+      return "Bass capital resident. If it's not 140BPM or higher, is it even music? Ask him about his next festival.";
+    }
+    if (lower.includes('factory') || lower.includes('automation') || lower.includes('work')) {
+      return "By day: Optimizing factories. By night: Optimizing DOM elements. He loves efficiency.";
+    }
+    if (lower.includes('crypto') || lower.includes('coin')) {
+      return "He's a crypto native. Probably looking at charts right now. Have you played 'Paper Hands' in the playground above?";
+    }
+    if (lower.includes('hello') || lower.includes('hi') || lower.includes('yo')) {
+      return "Beep boop. Hello human. I am a script.";
+    }
+    if (lower.includes('contact') || lower.includes('email') || lower.includes('reach')) {
+      return "Best way to reach him is Twitter @tylerwares. Slide into the DMs.";
+    }
+    
+    const randomFallbacks = [
+      "I don't have an AI brain anymore (budget cuts). Try asking about 'projects'.",
+      "Error 404: Intelligence not found. Try asking about 'music'.",
+      "I'm just a glorified if/else statement. Ask me about 'automation'.",
+      "My creator didn't program a response for that. Chaos reigns.",
+    ];
+    return randomFallbacks[Math.floor(Math.random() * randomFallbacks.length)];
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
@@ -27,16 +57,12 @@ export const ChatWidget: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsTyping(true);
 
-    // Convert messages for Gemini history format
-    const history = messages.map(m => ({
-        role: m.role === 'model' ? 'model' : 'user',
-        parts: [{ text: m.text }]
-    }));
-
-    const response = await generateChatResponse(userMsg, history);
-
-    setMessages(prev => [...prev, { role: 'model', text: response }]);
-    setIsTyping(false);
+    // Simulate network delay for effect
+    setTimeout(() => {
+        const response = getStaticResponse(userMsg);
+        setMessages(prev => [...prev, { role: 'model', text: response }]);
+        setIsTyping(false);
+    }, 800);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -49,7 +75,7 @@ export const ChatWidget: React.FC = () => {
       {isOpen && (
         <div className="mb-4 w-[90vw] md:w-80 bg-tyler-dark border-2 border-accent-green shadow-[8px_8px_0px_0px_rgba(0,255,148,0.2)] flex flex-col h-96">
           <div className="bg-accent-green p-2 flex justify-between items-center text-black font-bold font-mono">
-            <span>ASK_TYLER_AI.exe</span>
+            <span>AUTOBOT_V1.exe</span>
             <button onClick={() => setIsOpen(false)} className="hover:text-white">X</button>
           </div>
           
@@ -68,7 +94,7 @@ export const ChatWidget: React.FC = () => {
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-black text-accent-green border border-accent-green p-2 animate-pulse">
-                  Thinking...
+                  Computing...
                 </div>
               </div>
             )}
@@ -81,7 +107,7 @@ export const ChatWidget: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything..."
+              placeholder="Ask keyword..."
               className="flex-1 bg-transparent text-white outline-none font-mono text-sm px-2"
             />
             <button 
