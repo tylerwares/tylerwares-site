@@ -43,6 +43,7 @@ export const INTERESTS: Interest[] = [
   { name: 'DIY / Home Reno', category: 'Lifestyle' },
   { name: 'Optimization', category: 'Lifestyle' },
   { name: 'Personal Finance', category: 'Lifestyle' },
+  { name: 'Fitness', category: 'Lifestyle' },
   { name: 'EDM', category: 'Music' },
   { name: 'Music Festivals', category: 'Music' },
   { name: 'Psychology', category: 'Mind' },

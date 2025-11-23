@@ -29,6 +29,7 @@
               'glitch': 'glitch 1s linear infinite',
               'conveyor': 'conveyor 1s linear infinite',
               'robot': 'robot 0.5s ease-in-out infinite',
+              'marquee': 'marquee 20s linear infinite',
             },
             keyframes: {
               float: {
@@ -46,6 +47,10 @@
               robot: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(10px)' },
+              },
+              marquee: {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' },
               }
             }
           }
@@ -80,14 +85,17 @@
   <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "vite": "https://aistudiocdn.com/vite@^7.2.4"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
