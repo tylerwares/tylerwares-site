@@ -63,16 +63,8 @@ const App: React.FC = () => {
       </nav>
 
       <main>
-        {/* Hero */}
+        {/* Hero (Includes Marquee) */}
         <ChaosHero />
-
-        {/* Info Marquee */}
-        <div className="bg-accent-green text-black py-2 overflow-hidden border-y-2 border-black rotate-1 scale-105 my-10">
-          <div className="whitespace-nowrap animate-[marquee_20s_linear_infinite] font-mono font-bold text-lg">
-             BUILDING IN PUBLIC // AI ENTHUSIAST // FACTORY AUTOMATION // CRYPTO NATIVE // FESTIVAL GOER // OPTIMIZING EVERYTHING // 
-             BUILDING IN PUBLIC // AI ENTHUSIAST // FACTORY AUTOMATION // CRYPTO NATIVE // FESTIVAL GOER // OPTIMIZING EVERYTHING // 
-          </div>
-        </div>
 
         {/* Projects */}
         <section id="projects" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">

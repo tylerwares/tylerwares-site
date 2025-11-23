@@ -34,7 +34,7 @@ export const GameArcade: React.FC = () => {
         </button>
       </div>
 
-      <div className="h-96">
+      <div className="h-[550px]">
         {activeTab === 'factory' ? <FactoryGame /> : <CryptoGame />}
       </div>
     </div>

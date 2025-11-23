@@ -80,6 +80,11 @@ export const CryptoGame: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Use element size for resolution to prevent blurring on resize
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     const history = selectedCoin.history;
@@ -104,7 +109,7 @@ export const CryptoGame: React.FC = () => {
     history.forEach((p, i) => {
       const x = (i / (history.length - 1)) * canvas.width;
       // Scale y to fit canvas with padding
-      const y = canvas.height - ((p - min) / range) * (canvas.height - 20) - 10;
+      const y = canvas.height - ((p - min) / range) * (canvas.height - 40) - 20;
       
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
@@ -144,7 +149,7 @@ export const CryptoGame: React.FC = () => {
     <div className="p-6 bg-tyler-black border border-accent-blue font-mono h-full flex flex-col gap-4">
       
       {/* Header Stats */}
-      <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+      <div className="flex justify-between items-center border-b border-gray-800 pb-4 shrink-0">
         <div>
             <div className="text-xs text-gray-500">NET WORTH</div>
             <div className={`text-2xl font-bold ${netWorth >= 1000 ? 'text-accent-green' : 'text-accent-pink'}`}>
@@ -200,14 +205,14 @@ export const CryptoGame: React.FC = () => {
 
         {/* Chart & Controls */}
         <div className="w-2/3 flex flex-col">
-            <div className="flex-1 bg-black border border-gray-800 relative mb-4 p-2">
-                <canvas ref={canvasRef} width={400} height={200} className="w-full h-full object-contain" />
+            <div className="flex-1 bg-black border border-gray-800 relative mb-4 p-2 min-h-0">
+                <canvas ref={canvasRef} className="w-full h-full block" />
                 <div className="absolute top-2 left-2 text-xs font-bold" style={{ color: selectedCoin.color }}>
                     {selectedCoin.name} // LIVE
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 h-14">
+            <div className="grid grid-cols-2 gap-3 h-14 shrink-0">
                 <button 
                     onClick={buy}
                     disabled={cash < selectedCoin.price}

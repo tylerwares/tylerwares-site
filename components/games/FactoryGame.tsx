@@ -48,8 +48,8 @@ export const FactoryGame: React.FC = () => {
   return (
     <div className="p-4 bg-tyler-black border border-accent-orange font-mono h-full flex flex-col">
       
-      {/* Visual Factory Floor */}
-      <div className="h-40 mb-4 bg-gray-900 border border-gray-700 relative overflow-hidden">
+      {/* Visual Factory Floor - Compacted Height */}
+      <div className="h-32 mb-2 bg-gray-900 border border-gray-700 relative overflow-hidden shrink-0">
         <div className="absolute top-2 left-2 text-[10px] text-gray-500">FLOOR_CAM_01</div>
         
         {/* Background Grid */}
@@ -88,7 +88,7 @@ export const FactoryGame: React.FC = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-4 mb-3 shrink-0">
         <div className="bg-black p-2 border-l-2 border-white">
             <div className="text-xs text-gray-500">WIDGETS</div>
             <div className="text-xl font-bold text-white">{widgets}</div>
@@ -99,11 +99,11 @@ export const FactoryGame: React.FC = () => {
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="grid grid-cols-1 gap-2 overflow-y-auto flex-1 pr-1">
+      {/* Controls - Fill remaining space evenly */}
+      <div className="flex flex-col gap-3 flex-1 justify-center">
         <button 
           onClick={makeWidget}
-          className="w-full bg-white text-black hover:bg-gray-200 py-3 font-bold active:scale-95 transition-transform border-b-4 border-gray-400 active:border-b-0 active:mt-1"
+          className="w-full bg-white text-black hover:bg-gray-200 py-3 md:py-4 font-bold active:scale-95 transition-transform border-b-4 border-gray-400 active:border-b-0 active:mt-1 shrink-0 text-sm md:text-base"
         >
           MANUAL ASSEMBLE (CLICK)
         </button>
@@ -111,28 +111,28 @@ export const FactoryGame: React.FC = () => {
         <button 
           onClick={sellWidgets}
           disabled={widgets === 0}
-          className="w-full py-2 border border-accent-green text-accent-green hover:bg-accent-green hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-green transition-colors uppercase text-sm"
+          className="w-full py-2 md:py-3 border border-accent-green text-accent-green hover:bg-accent-green hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-green transition-colors uppercase text-sm md:text-base font-bold shrink-0"
         >
           Ship Inventory (SELL)
         </button>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3 shrink-0">
             <button 
             onClick={buyRobot}
             disabled={money < robotCost}
-            className="p-2 border border-accent-blue text-accent-blue hover:bg-accent-blue hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-blue transition-colors flex flex-col items-center justify-center"
+            className="p-2 border border-accent-blue text-accent-blue hover:bg-accent-blue hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-blue transition-colors flex flex-col items-center justify-center h-full"
             >
-            <span className="text-xs">ADD ROBOT</span>
-            <span className="font-bold">${robotCost}</span>
+            <span className="text-xs mb-1">ADD ROBOT</span>
+            <span className="font-bold text-lg">${robotCost}</span>
             </button>
 
             <button 
             onClick={upgradeSpeed}
             disabled={money < speedCost}
-            className="p-2 border border-accent-orange text-accent-orange hover:bg-accent-orange hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-orange transition-colors flex flex-col items-center justify-center"
+            className="p-2 border border-accent-orange text-accent-orange hover:bg-accent-orange hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-accent-orange transition-colors flex flex-col items-center justify-center h-full"
             >
-            <span className="text-xs">FASTER BELT</span>
-            <span className="font-bold">${speedCost}</span>
+            <span className="text-xs mb-1">FASTER BELT</span>
+            <span className="font-bold text-lg">${speedCost}</span>
             </button>
         </div>
       </div>

@@ -14,7 +14,7 @@ export const ChaosHero: React.FC = () => {
   }, []);
 
   return (
-    <section className="min-h-[80vh] flex flex-col justify-center items-center relative overflow-hidden p-4">
+    <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden p-4">
       {/* Background Gradients (No Purple) */}
       <div className="absolute top-[-20%] left-[-20%] w-[50%] h-[50%] bg-accent-green opacity-10 blur-[100px] animate-float" />
       <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-accent-blue opacity-10 blur-[120px] animate-float" style={{ animationDelay: '2s' }} />
@@ -34,7 +34,7 @@ export const ChaosHero: React.FC = () => {
           </span>
         </h1>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-xl md:text-2xl font-mono mt-8">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-xl md:text-2xl font-mono mt-6">
           <span className="bg-white text-black px-4 py-1 -rotate-2 hover:rotate-0 transition-transform cursor-default">
             Builder
           </span>
@@ -49,11 +49,12 @@ export const ChaosHero: React.FC = () => {
         </div>
       </div>
       
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 animate-bounce">
-        <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+      {/* Marquee embedded in Hero for single-screen look */}
+      <div className="absolute bottom-12 left-0 w-full bg-accent-green text-black py-2 overflow-hidden border-y-2 border-black -rotate-1 scale-105 z-20 shadow-[0px_0px_20px_rgba(0,255,148,0.5)]">
+          <div className="whitespace-nowrap animate-[marquee_20s_linear_infinite] font-mono font-bold text-lg">
+             BUILDING IN PUBLIC // AI ENTHUSIAST // FACTORY AUTOMATION // CRYPTO NATIVE // FESTIVAL GOER // OPTIMIZING EVERYTHING // 
+             BUILDING IN PUBLIC // AI ENTHUSIAST // FACTORY AUTOMATION // CRYPTO NATIVE // FESTIVAL GOER // OPTIMIZING EVERYTHING // 
+          </div>
       </div>
     </section>
   );
